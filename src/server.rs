@@ -1,5 +1,7 @@
 use lazy_static::lazy_static;
 use std::convert::Infallible;
+use std::sync::Arc;
+use tzf_rs::DefaultFinder;
 use warp::{http::StatusCode, Filter, Rejection, Reply};
 
 pub mod tz;
@@ -11,6 +13,14 @@ lazy_static! {
         .ok()
         .and_then(|port| port.parse::<u16>().ok())
         .unwrap_or(3000);
+}
+#[derive(Clone)]
+pub struct Context {
+    tz_finder: Arc<DefaultFinder>,
+}
+
+fn with_ctx<C: Clone + Send>(ctx: C) -> impl Filter<Extract = (C,), Error = Infallible> + Clone {
+    warp::any().map(move || ctx.clone())
 }
 
 async fn handle_rejection(err: Rejection) -> Result<impl Reply, Infallible> {
@@ -35,15 +45,19 @@ async fn handle_rejection(err: Rejection) -> Result<impl Reply, Infallible> {
     Ok(warp::reply::with_status(message, code))
 }
 
-async fn health_handler() -> Result<impl Reply, Rejection> {
+async fn health_handler(_ctx: Context) -> Result<impl Reply, Rejection> {
     Ok(format!("OK"))
 }
 
 pub async fn run_server() -> BoxUnitResult {
     let logger = warp::log("rust_tz_service::server");
+    let ctx = with_ctx(Context {
+        tz_finder: Arc::new(DefaultFinder::new()),
+    });
 
     let health_route = warp::path!("health")
         .and(warp::get())
+        .and(ctx.clone())
         .and_then(health_handler);
 
     let tz_route = {
@@ -52,6 +66,7 @@ pub async fn run_server() -> BoxUnitResult {
         warp::path!("api" / "tz")
             .and(warp::get())
             .and(warp::filters::query::query())
+            .and(ctx.clone())
             .and_then(tz_handler)
     };
 

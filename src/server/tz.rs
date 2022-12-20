@@ -1,3 +1,4 @@
+use crate::server::{Arc, Context};
 use chrono::{Offset, TimeZone, Utc};
 use chrono_tz::{OffsetName, Tz};
 use serde::{Deserialize, Serialize};
@@ -18,8 +19,8 @@ pub struct TimezoneReturnBody {
     id: String,
 }
 
-pub async fn tz_handler(query: TimezoneQuery) -> Result<impl Reply, Rejection> {
-    let timezone_name = get_timezone_for_location(query.lat, query.lng);
+pub async fn tz_handler(query: TimezoneQuery, ctx: Context) -> Result<impl Reply, Rejection> {
+    let timezone_name = get_timezone_for_location(ctx.tz_finder, query.lat, query.lng);
     let timezone: Tz = timezone_name.parse().unwrap();
     let now = Utc::now();
     let offset = timezone.offset_from_utc_datetime(&now.naive_utc());
@@ -32,7 +33,6 @@ pub async fn tz_handler(query: TimezoneQuery) -> Result<impl Reply, Rejection> {
     Ok(warp::reply::json(&output))
 }
 
-fn get_timezone_for_location(lat: f64, lng: f64) -> String {
-    let finder = DefaultFinder::new();
+fn get_timezone_for_location(finder: Arc<DefaultFinder>, lat: f64, lng: f64) -> String {
     String::from(finder.get_tz_name(lng, lat))
 }
