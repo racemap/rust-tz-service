@@ -22,7 +22,7 @@ And, the service will respond with a json:
 
 ## How to use
 
-This project based on rust. To run it you have to install rust and cargo and then you can use it with `cargo run`. Thats all. Or you can use the prebuild docker container. 
+This project based on rust. To run it you have to install rust and cargo and then you can use it with `RUST_LOG=info cargo run`. Thats all. Or you can use the prebuild docker container. 
 
 ### Docker
 
