@@ -38,7 +38,7 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         push: false
-        tags: racemap/rust-tz-service:$(date +%s),racemap/rust-tz-service:latest
+        tags: racemap/rust-tz-service:{{ date +%s }},racemap/rust-tz-service:latest
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
     - 
