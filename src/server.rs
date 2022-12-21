@@ -63,7 +63,7 @@ pub async fn run_server() -> BoxUnitResult {
     let tz_route = {
         use tz::tz_handler;
 
-        warp::path!("api" / "tz")
+        warp::path!("api")
             .and(warp::get())
             .and(warp::filters::query::query())
             .and(ctx.clone())
