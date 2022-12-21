@@ -19,6 +19,12 @@ jobs:
     - 
       name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
+    -    
+      name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        images: racemap/rust-tz-service
     - 
       name: Cache Docker layers
       uses: actions/cache@v2
@@ -38,7 +44,8 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         push: false
-        tags: racemap/rust-tz-service:$(date +%s),racemap/rust-tz-service:latest
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
     - 
