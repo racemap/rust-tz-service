@@ -12,7 +12,7 @@ lazy_static! {
     pub static ref PORT: u16 = std::env::var("PORT")
         .ok()
         .and_then(|port| port.parse::<u16>().ok())
-        .unwrap_or(3000);
+        .unwrap_or(8080);
 }
 #[derive(Clone)]
 pub struct Context {
