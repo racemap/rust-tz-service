@@ -24,7 +24,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v4
       with:
-        images: racemap/rust-tz-service
+        images: racemap/tz-service
     - 
       name: Cache Docker layers
       uses: actions/cache@v3

@@ -27,7 +27,7 @@ This project based on rust. To run it you have to install rust and cargo and the
 ### Docker
 
 ```
-docker run -p8080:8080 racemap/rust-tz-service
+docker run -p8080:8080 racemap/tz-service
 ```
 
 If you want to build the container yourself, change to the project folder and run `docker build -t rust-tz-service .`. To start the container after build run `docker run -p 8080:8080 rust-tz-service`.
