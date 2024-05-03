@@ -1239,7 +1239,7 @@ dependencies = [
 
 [[package]]
 name = "rust-tz-service"
-version = "0.1.0"
+version = "1.1.0"
 dependencies = [
  "chrono",
  "chrono-tz",
