@@ -8,6 +8,8 @@ pub mod tz;
 
 use crate::utils::{BoxUnitResult, UnitOk};
 
+use self::tz::InvalidLatLon;
+
 lazy_static! {
     pub static ref PORT: u16 = std::env::var("PORT")
         .ok()
@@ -32,8 +34,11 @@ async fn handle_rejection(err: Rejection) -> Result<impl Reply, Infallible> {
             String::from("Method not allowed"),
         )
     } else if let Some(err) = err.find::<warp::reject::InvalidQuery>() {
-        log::error!("Invalid query: {:?}", err);
-        (StatusCode::BAD_REQUEST, format!("Invalid query: {:?}", err))
+        log::error!("{:?}", err);
+        (StatusCode::BAD_REQUEST, "Invalid query: lat and lng are required and must be numbers. |lat| <= 90 and |lng| <= 180".to_string())
+    } else if let Some(err) = err.find::<InvalidLatLon>() {
+        log::error!("Invalid latitude or longitude: lat - {:?} lng - {:?}", err.lat, err.lng);
+        (StatusCode::BAD_REQUEST, "Invalid latitude or longitude. |Lat| <= 90 and |Lng| <= 180".to_string())
     } else {
         log::error!("unhandled rejection: {:?}", err);
         (
